@@ -58,8 +58,8 @@ def affine_backward(dout, cache):
   N = x.shape[0]
   x_reshape = np.reshape(x,(N,-1))
 
-  dx = np.dot(dout, w.T)
-  dx = np.reshape(dx,x.shape)
+  dx = np.dot(dout, w.T).reshape(x.shape)
+  # dx = np.reshape(dx,x.shape)
   dw = np.dot(x_reshape.T, dout)
   db = np.sum(dout, axis=0)
   
@@ -335,7 +335,7 @@ def dropout_forward(x, dropout_param):
     ###########################################################################
     # TODO: Implement the test phase forward pass for inverted dropout.       #
     ###########################################################################
-    out = x * (np.random.rand(*x.shape)<p)/p
+    out = x
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -362,6 +362,7 @@ def dropout_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the training phase backward pass for inverted dropout.  #
     ###########################################################################
+    # p = dropout_param['p']
     dx = dout * mask
 
     ###########################################################################
@@ -395,12 +396,39 @@ def conv_forward_naive(x, w, b, conv_param):
     W' = 1 + (W + 2 * pad - WW) / stride
   - cache: (x, w, b, conv_param)
   """
+  
   out = None
   #############################################################################
   # TODO: Implement the convolutional forward pass.                           #
   # Hint: you can use the function np.pad for padding.                        #
   #############################################################################
-  pass
+  
+  stride = conv_param['stride']
+  pad = conv_param['pad']
+  (N, C, H, W) = x.shape
+  (F, C, HH, WW) = w.shape
+  Hprime = 1 + (H + 2 * pad - HH) / stride
+  Wprime = 1 + (W + 2 * pad - WW) / stride
+  
+  out = np.zeros((N,F,Hprime,Wprime))
+  npad = ((0,0),(0,0),(pad,pad),(pad,pad))
+  x_pad = np.pad(x,pad_width=npad, mode='constant',constant_values=0)
+  for i in range(N):
+    #x_to_filter has dimension Cx(H+2pad)x(W+2pad)
+    # x_to_filter = np.pad(x[i],pad_width=npad, mode='constant',constant_values=0)
+    #Loop through all filter
+    for j in range(F):
+      #Loop through each channel of filter
+      # for k in range(C):
+        for l in range(Hprime):
+          for m in range (Wprime):
+            out[i,j,l,m] = np.sum( x_pad[i,:,l*stride:(l*stride+HH),m*stride:(m*stride+WW)] * w[j] ) + b[j]
+
+
+
+
+
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -425,7 +453,40 @@ def conv_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the convolutional backward pass.                          #
   #############################################################################
-  pass
+  # Unpack the data
+  (x, w, b, conv_param) = cache
+  (N, C, H, W) = x.shape
+  (F, C, HH, WW) = w.shape  
+  stride = conv_param['stride']
+  pad = conv_param['pad']
+  # dout gonna have shape N,F,Hprime,Wprime
+  N, F, Hprime, Wprime = dout.shape
+  dx = np.zeros(x.shape)
+  dw = np.zeros(w.shape)
+  db = np.zeros(b.shape)
+  npad = ((0,0),(0,0),(pad,pad),(pad,pad))
+
+  x_pad = np.pad(x,pad_width=npad, mode='constant',constant_values=0)
+  dx_pad = np.pad(dx,pad_width=npad, mode='constant',constant_values=0)
+
+
+  for i in range(N):
+    #Loop through all filter
+    for j in range(F):
+      #Loop through each channel of filter
+      # for k in range(C):
+        for l in range(Hprime):
+          for m in range (Wprime):
+            # out[i,j,l,m] = np.sum( x_to_filter[:,l*stride:(l*stride+HH),m*stride:(m*stride+WW)] * w[j] ) + b[j]
+            dw[j] += dout[i,j,l,m] * x_pad[i,:,l*stride:(l*stride+HH),m*stride:(m*stride+WW)]
+            db[j] += dout[i,j,l,m]
+            dx_pad[i,:,l*stride:(l*stride+HH),m*stride:(m*stride+WW)] +=  w[j,:,:,:] * dout[i,j,l,m]
+
+
+  dx = dx_pad[:,:,pad:pad+H,pad:pad+W]
+
+
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -451,7 +512,25 @@ def max_pool_forward_naive(x, pool_param):
   #############################################################################
   # TODO: Implement the max pooling forward pass                              #
   #############################################################################
-  pass
+  (N, C, H, W) = x.shape
+  pool_height = pool_param['pool_height']
+  pool_width  = pool_param['pool_width']
+  stride      = pool_param['stride']
+  h_out = (H - pool_height)/stride + 1
+  w_out = (W - pool_width)/stride + 1
+
+  out = np.zeros((N,C,h_out,w_out))
+
+  for i in range (N):
+    #Loop through all channels
+    for j in range (C):
+      for k in range(h_out):
+        for l in range(w_out):
+          out[i,j,k,l] = np.max(x[i,j,k*stride:k*stride+pool_height,l*stride:l*stride+pool_width])
+
+
+
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -474,7 +553,30 @@ def max_pool_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the max pooling backward pass                             #
   #############################################################################
-  pass
+  (x, pool_param) = cache
+  pool_height = pool_param['pool_height']
+  pool_width  = pool_param['pool_width']
+  stride      = pool_param['stride']
+  (N, C, H, W) = x.shape
+  dx = np.zeros(x.shape)
+  h_out = (H - pool_height)/stride + 1
+  w_out = (W - pool_width)/stride + 1
+
+  for i in range (N):
+    for j in range (C):
+      for k in range(h_out):
+        for l in range(w_out):
+          #Forward the error to where it came from
+          x_window = x[i,j,k*stride:k*stride+pool_height,l*stride:l*stride+pool_width]
+          #Get the mask
+          mask = x_window == np.max(x_window)
+          dx[i,j,k*pool_height:k*pool_height+pool_height,l*pool_width:l*pool_width+pool_width] += dout[i, j, k, l] * mask
+
+
+
+
+
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################

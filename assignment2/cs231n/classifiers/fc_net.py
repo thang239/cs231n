@@ -177,8 +177,6 @@ class FullyConnectedNet(object):
       if index==0:
         self.params['W'+`index+1`] = sigma * np.random.randn(input_dim,hidden_dim)  
         self.params['b'+`index+1`] = np.zeros(hidden_dim)
-        # self.params['gamma'+`index+1`] = np.int32(1)
-        # self.params['beta'+`index+1`] = np.int32(0)
       else:
         self.params['W'+`index+1`] = sigma * np.random.randn(hidden_dims[index-1],hidden_dim)
         self.params['b'+`index+1`] = np.zeros(hidden_dim)
@@ -249,25 +247,32 @@ class FullyConnectedNet(object):
     ############################################################################
     out = [None]*self.num_layers
     cache = [None]*self.num_layers
+    l = self.num_layers
+    for i in range(l-1):
+      if i==0:
+        out[i], fc_cache = affine_forward(X,self.params['W'+`i+1`],self.params['b'+`i+1`])
+      else:
+        out[i],fc_cache = affine_forward(out[i-1],self.params['W'+`i+1`],self.params['b'+`i+1`]) 
+      cache[i] = (fc_cache,)
+      # Batch norm
+      if self.use_batchnorm:
+        out[i],bn_cache = batchnorm_forward(out[i],self.params['gamma'+`i+1`],self.params['beta'+`i+1`],self.bn_params[i])
+        cache[i] += (bn_cache,)
+      #   # ReLU 
+      #   out[i], relu_cache = relu_forward(out[i])
+      # else:
+      out[i],relu_cache = relu_forward(out[i])
+      cache[i] += (relu_cache,)  
+      # Dropout
+      if self.use_dropout:
+        out[i], dropout_cache = dropout_forward(out[i],self.dropout_param)
+        cache[i] += (dropout_cache,)
+    # print len(cache[i])
+    scores, cache[i+1] = affine_forward(out[i],self.params['W'+`i+2`],self.params['b'+`i+2`])     
 
 
-    if self.use_batchnorm:
-      for i in range(self.num_layers-1):
-        if i==0:
-          out[i],cache[i] = affine_batchnorm_relu_forward(X,self.params['W'+`i+1`],self.params['b'+`i+1`],self.bn_params[i],self.params['gamma'+`i+1`],self.params['beta'+`i+1`])
-        else:
-          out[i],cache[i] = affine_batchnorm_relu_forward(out[i-1],self.params['W'+`i+1`],self.params['b'+`i+1`],self.bn_params[i],self.params['gamma'+`i+1`],self.params['beta'+`i+1`])
-        
 
-      scores, cache[i+1] = affine_forward(out[i],self.params['W'+`i+2`],self.params['b'+`i+2`])     
-    else:
-      for i in range(self.num_layers-1):
-        if i==0:
-          out[i],cache[i] = affine_relu_forward(X,self.params['W'+`i+1`],self.params['b'+`i+1`])
-        else:
-          out[i],cache[i] = affine_relu_forward(out[i-1],self.params['W'+`i+1`],self.params['b'+`i+1`])
-      scores, cache[i+1] = affine_forward(out[i],self.params['W'+`i+2`],self.params['b'+`i+2`])
-    
+
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
@@ -294,7 +299,7 @@ class FullyConnectedNet(object):
     loss,dout = softmax_loss(scores,y)
     for i in xrange(self.num_layers):
       loss += 0.5 * self.reg * np.sum(self.params['W' + `i + 1`] ** 2)
-    l = self.num_layers
+    
     # L2_reg = 0
     for k,v in self.params.iteritems():
       if "W" in k:
@@ -303,11 +308,29 @@ class FullyConnectedNet(object):
     grads['W'+`l`] += self.reg * self.params['W'+`l`]
 
     for j in range(l-2,-1,-1):
-      if self.use_batchnorm:
+      if self.use_dropout and self.use_batchnorm:
+        fc_cache, bn_cache, relu_cache, dropout_cache = cache[j]
+        cache[j] = fc_cache, bn_cache, relu_cache
+        da = dropout_backward(dout,dropout_cache)
+        dout, grads['W'+`j+1`], grads['b'+`j+1`],grads['gamma'+`j+1`],grads['beta'+`j+1`] = affine_batchnorm_relu_backward(da,cache[j])
+      elif self.use_dropout:
+        fc_cache, relu_cache, dropout_cache = cache[j]
+        dout = dropout_backward(dout,dropout_cache)
+        dout = relu_backward(dout,relu_cache)
+        dout, grads['W'+`j+1`], grads['b'+`j+1`] = affine_backward(dout,fc_cache)
+      elif self.use_batchnorm:
         dout, grads['W'+`j+1`], grads['b'+`j+1`],grads['gamma'+`j+1`],grads['beta'+`j+1`] = affine_batchnorm_relu_backward(dout,cache[j])
       else:
         dout, grads['W'+`j+1`], grads['b'+`j+1`] = affine_relu_backward(dout,cache[j])
       grads['W'+`j+1`] += self.reg * self.params['W'+`j+1`]
+      
+      # if self.use_batchnorm:
+      #   dout, grads['W'+`j+1`], grads['b'+`j+1`],grads['gamma'+`j+1`],grads['beta'+`j+1`] = affine_batchnorm_relu_backward(dout,cache[j])
+      # else:
+      #   dout, grads['W'+`j+1`], grads['b'+`j+1`] = affine_relu_backward(dout,cache[j])
+
+
+      
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################

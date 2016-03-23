@@ -26,10 +26,10 @@
         <entry file="file://$PROJECT_DIR$/cs231n/layers.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="566" column="12" selection-start-line="566" selection-start-column="12" selection-end-line="566" selection-end-column="12" />
+              <caret line="568" column="12" selection-start-line="568" selection-start-column="12" selection-end-line="568" selection-end-column="12" />
               <folding>
-                <marker date="1457450512000" expanded="true" signature="49:995" placeholder="..." />
-                <marker date="1457450512000" expanded="true" signature="12106:12376" placeholder="..." />
+                <marker date="1458030358000" expanded="true" signature="49:995" placeholder="..." />
+                <marker date="1458030358000" expanded="true" signature="12106:12107" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -38,8 +38,8 @@
       <file leaf-file-name="fc_net.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cs231n/classifiers/fc_net.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.392022">
-              <caret line="261" column="9" selection-start-line="261" selection-start-column="9" selection-end-line="261" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.5570839">
+              <caret line="269" column="36" selection-start-line="269" selection-start-column="36" selection-end-line="269" selection-end-column="36" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -343,8 +343,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="566" column="12" selection-start-line="566" selection-start-column="12" selection-end-line="566" selection-end-column="12" />
           <folding>
-            <marker date="1457450512000" expanded="true" signature="49:995" placeholder="..." />
-            <marker date="1457450512000" expanded="true" signature="12106:12376" placeholder="..." />
+            <marker date="1458030358000" expanded="true" signature="49:995" placeholder="..." />
+            <marker date="1458030358000" expanded="true" signature="12106:12107" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -372,8 +372,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1457450512000" expanded="true" signature="49:995" placeholder="..." />
-            <marker date="1457450512000" expanded="true" signature="12106:12376" placeholder="..." />
+            <marker date="1458030358000" expanded="true" signature="49:995" placeholder="..." />
+            <marker date="1458030358000" expanded="true" signature="12106:12107" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -381,10 +381,10 @@
     <entry file="file://$PROJECT_DIR$/cs231n/layers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="566" column="12" selection-start-line="566" selection-start-column="12" selection-end-line="566" selection-end-column="12" />
+          <caret line="568" column="12" selection-start-line="568" selection-start-column="12" selection-end-line="568" selection-end-column="12" />
           <folding>
-            <marker date="1457450512000" expanded="true" signature="49:995" placeholder="..." />
-            <marker date="1457450512000" expanded="true" signature="12106:12376" placeholder="..." />
+            <marker date="1458030358000" expanded="true" signature="49:995" placeholder="..." />
+            <marker date="1458030358000" expanded="true" signature="12106:12107" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -399,8 +399,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cs231n/classifiers/fc_net.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.392022">
-          <caret line="261" column="9" selection-start-line="261" selection-start-column="9" selection-end-line="261" selection-end-column="9" />
+        <state vertical-scroll-proportion="0.5570839">
+          <caret line="269" column="36" selection-start-line="269" selection-start-column="36" selection-end-line="269" selection-end-column="36" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
