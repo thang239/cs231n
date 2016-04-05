@@ -46,9 +46,9 @@ class TwoLayerNet(object):
     # and biases using the keys 'W2' and 'b2'.                                 #
     ############################################################################
     mu,sigma = 0,weight_scale
-    self.params['W1'] = sigma * np.random.randn(input_dim,hidden_dim)+sigma
+    self.params['W1'] = sigma * np.random.randn(input_dim,hidden_dim)
     self.params['b1'] = np.zeros(hidden_dim)
-    self.params['W2'] = sigma * np.random.randn(hidden_dim,num_classes)+sigma
+    self.params['W2'] = sigma * np.random.randn(hidden_dim,num_classes)
     self.params['b2'] = np.zeros(num_classes)
     ############################################################################
     #                             END OF YOUR CODE                             #
@@ -230,7 +230,7 @@ class FullyConnectedNet(object):
       self.dropout_param['mode'] = mode   
     if self.use_batchnorm:
       for bn_param in self.bn_params:
-        bn_param[mode] = mode
+        bn_param['mode'] = mode
 
     scores = None
     ############################################################################
@@ -297,13 +297,14 @@ class FullyConnectedNet(object):
     ############################################################################
     
     loss,dout = softmax_loss(scores,y)
+
     for i in xrange(self.num_layers):
       loss += 0.5 * self.reg * np.sum(self.params['W' + `i + 1`] ** 2)
     
     # L2_reg = 0
-    for k,v in self.params.iteritems():
-      if "W" in k:
-        loss += 0.5 * self.reg * np.sum(v * v)
+    # for k,v in self.params.iteritems():
+    #   if "W" in k:
+    #     loss += 0.5 * self.reg * np.sum(v * v)
     dout, grads['W'+`l`], grads['b'+`l`] = affine_backward(dout,cache[l-1])
     grads['W'+`l`] += self.reg * self.params['W'+`l`]
 

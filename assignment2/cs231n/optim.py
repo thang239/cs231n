@@ -142,12 +142,12 @@ def adam(x, dx, config=None):
   config['m'] = config['beta1'] * config['m'] + (1-config['beta1']) * dx
   config['v'] = config['beta2'] * config['v'] + (1-config['beta2']) * (dx**2)
   config['t'] += 1
-  mb = config['m']
-  vb = config['v']
+  # mb = config['m']
+  # vb = config['v']
   # correct bias for first few iterations when t is small
-  if config['t']<100:
-    mb = config['m']/(1-config['beta1']**config['t'])
-    vb = config['v']/(1-config['beta2']**config['t'])
+  # if config['t']<1000:
+  mb = config['m']/(1-config['beta1']**config['t'])
+  vb = config['v']/(1-config['beta2']**config['t'])
   next_x      = x - config['learning_rate'] * mb / (np.sqrt(vb) + config['epsilon'])
   #############################################################################
   #                             END OF YOUR CODE                              #
